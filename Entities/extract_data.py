@@ -11,7 +11,7 @@ from datetime import datetime
 from dependencies.functions import Functions
 from time import sleep
 import traceback
-
+from logInformativo import LogInformativo
 
 
 valid_sheet = 'Sheet0'
@@ -69,9 +69,9 @@ def verify_file(file_path:str) -> bool:
       - Retorna o próprio caminho se for válido, caso contrário lança exceções.
     """
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f'File not found at path {file_path}')
+        raise FileNotFoundError(f"Arquivo não encontrado no caminho")
     if not file_path.endswith('.xls'):
-        raise ValueError(f'File at {file_path} is not a valid xls file')
+        raise ValueError(f"O arquivo não é um arquivo xls válido")
     return file_path
 
 def __get_agencia_conta(ws: Sheet) -> dict:
@@ -206,7 +206,7 @@ class ExtractData:
             wb:Book = xw.Book(file_path, update_links=False, read_only=True)
 
             if not valid_sheet in wb.sheet_names:
-                raise ValueError(f'Valid sheet not found in {file_path}')
+                raise ValueError(f"Sheet não encontrada no arquivo")
             ws:Sheet = wb.sheets[valid_sheet]
             
             df = pd.DataFrame()
