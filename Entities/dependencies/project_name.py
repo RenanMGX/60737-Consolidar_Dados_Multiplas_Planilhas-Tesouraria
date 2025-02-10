@@ -1,1 +1,1 @@
-PROJECT_NAME:str = "Processos de Faturamento"
+PROJECT_NAME:str = "Consolidar Dados Multiplas Planilhas"

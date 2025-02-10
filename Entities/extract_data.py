@@ -121,6 +121,13 @@ def __get_empresa_cnpj(ws:Sheet) -> dict:
     return result
 
 def corrigir_linhas_dados(dados):
+    """
+    Ajusta a estrutura dos dados para garantir que seja retornada uma lista de listas.
+    Parâmetros:
+      - dados: Lista que pode conter uma única linha ou múltiplas linhas.
+    Retorno:
+      - Lista de listas contendo os dados, garantindo consistência na estrutura.
+    """
     if isinstance(dados[0], list):
         return dados
     return [dados]
@@ -260,18 +267,23 @@ class ExtractData:
     
     @staticmethod
     def mp_get_dataframe(queue:mp.Queue, file_path:str, periodo:datetime):
+        """
+        Processa o arquivo utilizando multiprocessing e insere o DataFrame resultante na fila.
+        Em caso de exceção, tenta até 5 vezes e registra os logs de erro.
+        Parâmetros:
+          - queue: Objeto Queue do módulo multiprocessing para armazenar o DataFrame.
+          - file_path: Caminho do arquivo xls a ser processado.
+          - periodo: Data utilizada para rotulação nas linhas do DataFrame.
+        Retorno:
+          - Não retorna valor diretamente; o DataFrame é inserido na queue.
+        """
         for _ in range(5):
             try:
-                #return queue.put(pd.DataFrame())
                 return queue.put(ExtractData.get_dataframe(file_path=file_path, periodo=periodo))
-
             except Exception as e:
                 print(f"[{_+1}/5]Erro no arquivo {os.path.basename(file_path)}: {e}")
-                #print(traceback.format_exc())
-                
                 with open(datetime.now().strftime(f"logs/%Y%m%d%H%M%S{os.path.basename(file_path)}") + '.txt', 'w') as f:
                     f.write(traceback.format_exc())
-                
                 if _ == 4:
                     print(f"Final {os.path.basename(file_path)}")
                     return queue.put(pd.DataFrame())
